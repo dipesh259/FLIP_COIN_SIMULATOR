@@ -1,37 +1,47 @@
-#!/bin/bash 
+#!/bin/bash
 
-HEAD=0
-headCount=0
-tailCount=0
+isHEAD=0
+NUMBER_OF_COIN=2
 
 #TO DECLARE DICTIONARY
+declare -A doubletFlip
 
-declare -A singletFlip
-
-#USER INPUT 
-
+#TO USER INPUT
 read -p "Enter the Number of Coin Flip : " numberOfCoinFlip
 
-#TO STORE HEAD COUNT AND TAIL COUNT IN DICTIONARY
+#TO FUNCTION DOUBLET
 
-for(( count=0; count<$numberOfCoinFlip; count++ ))
-do
-   FlipCoin=$(( RANDOM % 2 ))
+function doublet()
+{
+   for(( count=0; count<$numberOfCoinFlip; count++ ))
+   do
+      for(( countCoin=0; countCoin<$NUMBER_OF_COIN; countCoin++ ))
+      do
+         flipCoin=$(( RANDOM % 2 ))
 
-   if [ $FlipCoin -eq $HEAD ]
-   then
-      singletFlip[HEAD]=$((++headCount))
-   else
-      singletFlip[TAIL]=$((++tailCount))
-   fi
-done
+         if [ $FlipCoin -eq $isHEAD ]
+         then
+            coinSide+=H
+         else
+            coinSide+=T
+         fi
+		done
+		((doubletFlip[$coinSide]++))
+		coinSide=""
+	done
 
-#TO PERCENTAGE
+#TO TOTAL PERCENTAGE OF DOUBLET COMBINATION
 
-singletHeadPercentage=`echo "scale=2; $headCount * 100 / $numberOfCoinFlip" | bc`
-singletTailPercentage=`echo "scale=2; $tailCount *100 / $numberOfCoinFlip" | bc`
+function totalDoubletPercentage()
+{
+   for index in ${!doubletFlip[@]}
+   do
+      doubletFlip[$index]=`echo "scale=2; ${doubletFlip[$index]} * 100 / $numberOfCoinFlip" | bc`
+   done
 
-#TO PRINT
+}
+#TO FUNCTION CALL 
 
-echo "To single head percentage and head count:$headCount : " $singletHeadPercentage
-echo "To single tail percentage and tail count:$tailCount : " $singletTailPercentage
+doublet
+totalDoubletPercentage
+
